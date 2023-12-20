@@ -37,7 +37,7 @@ def main(
         model:Optional[str] = "gpt-3.5-turbo-0613", 
         long_model:Optional[str] = "gpt-3.5-turbo-16k-0613",
         provider: str = "openai",
-        dataset:str = "tabfact",
+        dataset:str = "wtq", # wtq
         perturbation: str = "none", # none, transpose, shuffle, transpose_shuffle
         norm: bool = True,
         disable_resort: bool = True,

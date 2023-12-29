@@ -12,27 +12,6 @@ from utils.table import transpose, sort_dataframe
 
 from run_helper import load_dataset, get_cot_prompt, query, check_transpose, check_sort, read_json_file
 
-"""
-- Run COT (i.e., Direct Prompt) on all wikitablequestion dataset using openai API (GPT-3.5-turbo-0613)
-
-CUDA_VISIBLE_DEVICES=0 python run_cot.py \
-    --model gpt-3.5-turbo-0613 --long_model gpt-3.5-turbo-16k-0613 \
-    --provider openai --dataset wtq --sub_sample False \
-    --perturbation none --norm True --disable_resort True --norm_cache True \
-    --resume 0 --stop_at 1e6 --self_consistency 10 --temperature 0.8 \
-    --log_dir output/wtq_cot_wo_norm --cache_dir cache/wtq_cot_wo_norm
-
-- Run COT (i.e., Direct Prompt) on all wikitablequestion dataset using vllm (vicuna-13b-v1.5-16k)
-
-CUDA_VISIBLE_DEVICES=0 python run_cot.py \
-    --model None --long_model lmsys/vicuna-13b-v1.5-16k \
-    --provider vllm --dataset wtq  --sub_sample False \
-    --perturbation none --norm True --disable_resort True --norm_cache True \
-    --resume 0 --stop_at 1e6 --self_consistency 10 --temperature 0.8 \
-    --log_dir output/wtq_cot_vicuna_wo_norm --cache_dir cache/wtq_cot_vicuna_wo_norm
-
-"""
-
 def main(
         model:Optional[str] = "gpt-3.5-turbo-0613", # base model of the agent (for short prompt to save money)
         long_model:Optional[str] = "gpt-3.5-turbo-16k-0613", # long model of the agent (only used for long prompt)

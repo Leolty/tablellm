@@ -13,20 +13,20 @@ from utils.table import transpose, sort_dataframe
 from run_helper import load_dataset, get_cot_prompt, query, check_transpose, check_sort, read_json_file
 
 """
-- Run COT on wikitablequestion dataset using openai API (GPT-3.5-turbo-0613)
+- Run COT (i.e., Direct Prompt) on all wikitablequestion dataset using openai API (GPT-3.5-turbo-0613)
 
 CUDA_VISIBLE_DEVICES=0 python run_cot.py \
     --model gpt-3.5-turbo-0613 --long_model gpt-3.5-turbo-16k-0613 \
-    --provider openai --dataset wtq \
+    --provider openai --dataset wtq --sub_sample False \
     --perturbation none --norm True --disable_resort True --norm_cache True \
     --resume 0 --stop_at 1e6 --self_consistency 10 --temperature 0.8 \
     --log_dir output/wtq_cot_wo_norm --cache_dir cache/wtq_cot_wo_norm
 
-- Run COT on wikitablequestion dataset using vllm (vicuna-13b-v1.5-16k)
+- Run COT (i.e., Direct Prompt) on all wikitablequestion dataset using vllm (vicuna-13b-v1.5-16k)
 
 CUDA_VISIBLE_DEVICES=0 python run_cot.py \
     --model None --long_model lmsys/vicuna-13b-v1.5-16k \
-    --provider vllm --dataset wtq \
+    --provider vllm --dataset wtq  --sub_sample False \
     --perturbation none --norm True --disable_resort True --norm_cache True \
     --resume 0 --stop_at 1e6 --self_consistency 10 --temperature 0.8 \
     --log_dir output/wtq_cot_vicuna_wo_norm --cache_dir cache/wtq_cot_vicuna_wo_norm
@@ -34,21 +34,21 @@ CUDA_VISIBLE_DEVICES=0 python run_cot.py \
 """
 
 def main(
-        model:Optional[str] = "gpt-3.5-turbo-0613", 
-        long_model:Optional[str] = "gpt-3.5-turbo-16k-0613",
-        provider: str = "openai",
-        dataset:str = "wtq", # wtq
+        model:Optional[str] = "gpt-3.5-turbo-0613", # base model of the agent (for short prompt to save money)
+        long_model:Optional[str] = "gpt-3.5-turbo-16k-0613", # long model of the agent (only used for long prompt)
+        provider: str = "openai", # openai, huggingface, vllm
+        dataset:str = "wtq", # wtq or tabfact
         perturbation: str = "none", # none, transpose, shuffle, transpose_shuffle
-        norm: bool = True,
-        disable_resort: bool = True,
-        norm_cache: bool = True,
-        sub_sample: bool = True,
-        resume:int = 0,
-        stop_at:int = 1e6,
-        self_consistency:int = 10,
-        temperature:float=0.8,
-        log_dir: str = "output/tabfact_cot",
-        cache_dir: str = "cache",
+        norm: bool = True, # whether to NORM the table
+        disable_resort: bool = True, # whether to disable the resort stage in NORM
+        norm_cache: bool = True, # whether to cache the normalization results so that we can reuse them
+        sub_sample: bool = True, # whether to only run on the subset sampled data points
+        resume:int = 0, # resume from the i-th data point
+        stop_at:int = 1e6, # stop at the i-th data point
+        self_consistency:int = 10, # how many times to do self consistency
+        temperature:float=0.8, # temperature for model
+        log_dir: str = "output/wtq_cot", # directory to store the logs
+        cache_dir: str = "cache", # directory to store the cache (normalization results)
 ):
     
     #### create log & cache dir and save config ####

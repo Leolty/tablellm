@@ -11,20 +11,20 @@ from run_helper import load_dataset, check_transpose, check_sort, read_json_file
 
 
 """
-- Run agent on wikitablequestion dataset using openai API (GPT-3.5-turbo-0613)
+- Run agent on all wikitablequestion dataset using openai API (GPT-3.5-turbo-0613)
 
 CUDA_VISIBLE_DEVICES=0 python run_agent.py \
     --model gpt-3.5-turbo-0613 --long_model gpt-3.5-turbo-16k-0613 \
-    --provider openai --dataset wtq \
+    --provider openai --dataset wtq --sub_sample False \
     --perturbation none --use_full_table True --norm True --disable_resort True --norm_cache True \
     --resume 0 --stop_at 1e6 --self_consistency 1 --temperature 0.8 \
     --log_dir output/wtq_agent_wo_norm --cache_dir cache/wtq_agent_wo_norm
 
-- Run agent on wikitablequestion dataset using vllm (vicuna-13b-v1.5-16k)
+- Run agent on all wikitablequestion dataset using vllm (vicuna-13b-v1.5-16k)
 
 CUDA_VISIBLE_DEVICES=0 python run_agent.py \
     --model None --long_model lmsys/vicuna-13b-v1.5-16k \
-    --provider vllm --dataset wtq \
+    --provider vllm --dataset wtq --sub_sample False \
     --perturbation none --use_full_table True --norm True --disable_resort True --norm_cache True \
     --resume 0 --stop_at 1e6 --self_consistency 1 --temperature 0.8 \
     --log_dir output/wtq_agent_vicuna_wo_norm --cache_dir cache/wtq_agent_vicuna_wo_norm
@@ -32,22 +32,22 @@ CUDA_VISIBLE_DEVICES=0 python run_agent.py \
 """
 
 def main(
-        model:Optional[str] = "gpt-3.5-turbo-0613", 
-        long_model:Optional[str] = "gpt-3.5-turbo-16k-0613",
-        provider: str = "openai", # openai, vllm
-        dataset:str = "wtq", # wtq
+        model:Optional[str] = "gpt-3.5-turbo-0613", # base model of the agent (for short prompt to save money)
+        long_model:Optional[str] = "gpt-3.5-turbo-16k-0613", # long model of the agent (only used for long prompt)
+        provider: str = "openai", # openai, huggingface, vllm
+        dataset:str = "wtq", # wtq, tabfact
         perturbation: str = "none", # none, transpose, shuffle, transpose_shuffle
-        use_full_table: bool = True,
-        norm: bool = True,
-        disable_resort: bool = True,
+        use_full_table: bool = True, # whether to use the full table or only the partial table
+        norm: bool = True, # whether to NORM the table
+        disable_resort: bool = True, # whether to disable the resort stage in NORM
         norm_cache: bool = True, # whether to cache the normalization results so that we can reuse them
-        sub_sample: bool = True, # run on the sampled questions
-        resume:int = 0,
-        stop_at:int = 1e6,
-        self_consistency:int = 1,
-        temperature:float=0.8,
-        log_dir: str = "output/tabfact_agent",
-        cache_dir: str = "cache",
+        sub_sample: bool = True, # whether to only run on the subset sampled data points
+        resume:int = 0, # resume from the i-th data point
+        stop_at:int = 1e6, # stop at the i-th data point
+        self_consistency:int = 1, # how many times to do self consistency
+        temperature:float=0.8, # temperature for model
+        log_dir: str = "output/tabfact_agent", # directory to store the logs
+        cache_dir: str = "cache", # directory to store the cache (normalization results)
 ):
     
     #### create log & cache dir and save config ####

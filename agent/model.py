@@ -1,4 +1,5 @@
 import openai
+import os
 import time
 import tiktoken
 import timeout_decorator
@@ -15,10 +16,18 @@ class Model:
             self.model = AutoModelForCausalLM.from_pretrained(model_name)
         elif provider == 'openai':
             self.tokenizer = tiktoken.encoding_for_model(model_name)
+            
+            API_KEY = os.getenv("OPENAI_API_KEY", None)
+            
+            if API_KEY is None:
+                raise ValueError("OPENAI_API_KEY not set, please run `export OPENAI_API_KEY=<your key>` to ser it")
+            else:
+                openai.api_key = API_KEY
+                
         elif provider == "vllm":
             self.model = LLM(model_name, gpu_memory_utilization=0.9)
             self.tokenizer = self.model.get_tokenizer()
-            
+
 
     def query(self, prompt: str, **kwargs) -> Union[str, list]:
         if self.provider == 'openai':

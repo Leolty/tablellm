@@ -33,10 +33,10 @@ unzip assets/data.zip
 
 After unzipping, you should have the following files:
 
-```bash
-data
-├── wtq.json
-├── tabfact.json
+```
+└── data
+    ├── wtq.json
+    ├── tabfact.json
 ```
 
 ## 🔬 Experimentation
@@ -58,6 +58,32 @@ Detailed explanations of parameters can be found in [run_cot.py](run_cot.py) and
 For hands-on experience with the table agent, refer to the following notebook:
 
 - [examples/pyagent.ipynb](examples/pyagent.ipynb)
+
+## 📈 Results and Evaluation
+
+To access our experimental results on all wtq datasets, unzip this file:
+
+```bash
+unzip assets/results.zip
+```
+
+Post-unzipping, you will find:
+
+```bash
+└── results
+    └── results/wtq-cot-all
+        ├── result_5.json  # 5 runs of direct prompting, stored in a list
+    └── results/wtq-agent-all
+        ├── result_sc1.json
+        ├── result_sc2.json
+        ├── result_sc3.json
+        ├── result_sc4.json
+        ├── result_sc5.json # 5 runs of python shell agent, each in a separate file
+```
+
+For result evaluation, refer to the following notebook:
+
+- [examples/evaluate.ipynb](examples/evaluate.ipynb)
 
 ## 📚 Citation
 

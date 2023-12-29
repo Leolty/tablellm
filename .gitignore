@@ -3,8 +3,9 @@
 .git
 
 # input and output directories
-/data
-/output
+/data*
+/output*
+/results*
 
 # model checkpoints
 /cache

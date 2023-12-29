@@ -5,10 +5,6 @@ from contextlib import redirect_stdout
 from io import StringIO
 import unicodedata
 import re
-import sqlite3
-from typing import List, Tuple, Any, Union
-import numpy as np
-from datetime import datetime
 
 ###################################
 ### Dataframe related functions ###
@@ -132,23 +128,7 @@ def infer_dtype(df):
 
     return df
 
-# def parse_code_from_string(input_string):
-#     """
-#     Parse executable code from a string.
 
-#     Parameters:
-#     input_string (str): The input string.
-
-#     Returns:
-#     str: The parsed code.
-#     """
-
-#     # Removes `, whitespace & python from start
-#     input_string = re.sub(r"^(\s|`)*(?i:python)?\s*", "", input_string, flags=re.IGNORECASE)
-#     # Removes whitespace & ` from end
-#     input_string = re.sub(r"(\s|`)*$", "", input_string)
-    
-#     return input_string
 def parse_code_from_string(input_string):
     """
     Parse executable code from a string, handling various markdown-like code block formats.

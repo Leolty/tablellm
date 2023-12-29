@@ -5,23 +5,7 @@ import json
 import numpy as np
 from tqdm import tqdm
 from fire import Fire
-from typing import Union, List, Tuple, Optional
-
-"""
-- Evaluate the results
-
-# Evaluate the results from a single checkpoint
-python evaluate.py \
-    --checkpoints output/wtq_cot_vicuna_greedy/result.jsonl \
-    --n_times 100 
-
-# Evaluate the results from multiple checkpoints
-python evaluate.py \
-    --checkpoints wtq_cot_vicuna,wtq_agent_vicuna_sc5 \
-    --elements_per_checkpoint 5,5 \
-    --n_times 100
-
-"""
+from typing import Union, List, Tuple
 
 
 def flatten(lst):
@@ -38,7 +22,13 @@ def load_results(checkpoints, elements_per_checkpoint):
     print(f"Loading {checkpoints}...")
     # not a list or a tuple, make it a list
     if not isinstance(checkpoints, list) and not isinstance(checkpoints, tuple):
-        checkpoints = [checkpoints]
+        # try to split by comma
+        if "," in checkpoints:
+            checkpoints = checkpoints.split(",")
+            # remove the spaces
+            checkpoints = [checkpoint.strip() for checkpoint in checkpoints]
+        else:
+            checkpoints = [checkpoints]
     
     all_results = []
     
@@ -76,12 +66,16 @@ def load_results(checkpoints, elements_per_checkpoint):
             # make the text field a list of list
             for result in combined_results:
                 # random sample the text field if specified
+                if isinstance(result["text"], str):
+                    result["text"] = [result["text"]]
                 result["text"] = random.sample(result["text"], elements_per_checkpoint[i]) if elements_per_checkpoint else [result["text"]]
             
         else:
             # if this is not the first checkpoint, add the text field to the existing list
             for j, result in enumerate(results):
                 # remember to random sample the text field if specified
+                if isinstance(result["text"], str):
+                    result["text"] = [result["text"]]
                 temp = random.sample(result["text"], elements_per_checkpoint[i]) if elements_per_checkpoint else result["text"]
                 
                 # add by question id instead of index
@@ -114,7 +108,8 @@ def eval_wtq(checkpoints:Union[List, Tuple, str], elements_per_checkpoint:Union[
             
             preds = [extract_answer(text) for text in result["text"]]
             preds = [pred for pred in preds if pred]
-            np.random.shuffle(preds)
+            if n_times > 1:
+                np.random.shuffle(preds)
             if not preds:
                 total += 1
                 continue

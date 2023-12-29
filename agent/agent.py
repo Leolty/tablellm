@@ -16,12 +16,12 @@ class TableAgent:
                  prompt_type: str,
                  model: Optional[Model],
                  long_model: Optional[Model],
-                 model_provider: str = "openai",
                  temperature: float = 0.8,
                  top_p: float = 0.95,
                  stop_tokens: Optional[list] = ["Observation:"],
                  max_depth: int = 5,
                  log_dir: Optional[str] = None,
+                 print_process: bool = False,
                  use_full_table: bool = True
                 ):
         
@@ -40,6 +40,7 @@ class TableAgent:
         self.top_p = top_p
         self.log_dir = log_dir
         self.use_full_table = use_full_table
+        self.print_process = print_process
         
         if prompt_type == "wtq":
             from prompt.wtq.agent import agent_prefix, agent_prefix_with_omitted_rows_guideline
@@ -58,15 +59,6 @@ class TableAgent:
 
 
         self.prompt = self.prompt.replace("[TABLE]", table)
-
-        # set openai api key if provider is openai
-        if model_provider == "openai":
-            API_KEY = os.getenv("OPENAI_API_KEY", None)
-
-            if API_KEY is None:
-                raise ValueError("OPENAI_API_KEY not set, please run `export OPENAI_API_KEY=<your key>` to ser it")
-            else:
-                openai.api_key = API_KEY
             
     
     def reset_prompt(self):
@@ -166,10 +158,12 @@ class TableAgent:
             else:
                 code = parse_code_from_string(text)
 
-            print(code)
+            print(f"Run the code below:\n```\n{code}\n```")
 
             # execute the code
             observation, memory = python_repl_ast(code, custom_locals={"df": self.df}, custom_globals=globals(), memory=memory)
+            
+            print(f"Observation:\n```\n{observation}\n```")
 
             if isinstance(observation, str) and observation == "":
                 observation = "success!"
@@ -195,6 +189,10 @@ class TableAgent:
             with open(self.log_dir, "a") as f:
                 f.write("=" *50 + "\n")
                 f.write(self.prompt + "\n")
+        
+        if self.print_process:
+            print("=" * 50)
+            print(self.prompt)
 
         response_text = ""
         response_list = []
@@ -213,6 +211,10 @@ class TableAgent:
 
             response_text += text
             response_list.append(response)
+            
+            if self.print_process:
+                # print without new line
+                print(text, end="")
 
             # first check if it is terminal
             if self.is_terminal(text):
@@ -238,6 +240,10 @@ class TableAgent:
 
             response_text += f"Observation: {observation}"
             self.prompt += text + f"Observation: {observation}"
+            
+            if self.print_process:
+                print(f"Observation: {observation}", end="")
+                
         
         # run out of depth, no terminal state, we still need to log the response
         if self.log_dir is not None:

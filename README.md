@@ -1,17 +1,21 @@
 # TableLLM Repository
 
-Official implementation of "Rethinking Tabular Data Understanding with Large Language Models" ([Paper](https://arxiv.org/abs/2312.16702)). Dive into the world of advanced tabular data analysis with our Large Language Models!
+Official implementation of the paper "Rethinking Tabular Data Understanding with Large Language Models" ([https://arxiv.org/abs/2312.16702](https://arxiv.org/abs/2312.16702)).
 
 ## 🚀 Installation
 
 ### 🛠 Clone the Repository
+
+Start by cloning the repository to your local machine:
 
 ```bash
 git clone https://github.com/Leolty/tablellm.git
 cd tablellm
 ```
 
-### 📦 Install Requirements
+### 📦 Install Dependencies
+
+Create and activate a new environment, and install the required packages:
 
 ```bash
 conda create -n tablellm python=3.10
@@ -21,13 +25,13 @@ pip install -r requirements.txt
 
 ## 🗂 Data
 
-Extract the provided data with the following command:
+Unzip the dataset provided in the repository:
 
 ```bash
 unzip assets/data.zip
 ```
 
-Your data directory will include:
+After unzipping, you should have the following files:
 
 ```bash
 data
@@ -35,9 +39,9 @@ data
 ├── tabfact.json
 ```
 
-## 🧪 Experimentation
+## 🔬 Experimentation
 
-### 🔬 Reproducing the Results
+### 🔄 Reproducing the Results
 
 For replicating our study's findings, navigate to the [scripts](scripts) folder:
 
@@ -47,17 +51,17 @@ For replicating our study's findings, navigate to the [scripts](scripts) folder:
   > Ensure [vllm](https://github.com/vllm-project/vllm) is installed beforehand.
 - [scripts/perturbed_example.sh](scripts/perturbed_example.sh): An example of running experiments on perturbed wtq dataset.
 
-Parameters are detailed in [run_cot.py](run_cot.py) and [run_agent.py](run_agent.py).
+Detailed explanations of parameters can be found in [run_cot.py](run_cot.py) and [run_agent.py](run_agent.py).
 
 ### 🤖 Using the Table Agent
 
-Explore the table agent through:
+For hands-on experience with the table agent, refer to the following notebook:
 
 - [examples/pyagent.ipynb](examples/pyagent.ipynb)
 
 ## 📚 Citation
 
-To cite our work in your research, use the following bibtex entry:
+If you find this research useful in your work, please consider citing:
 
 ```bibtex
 @misc{liu2023rethinking,

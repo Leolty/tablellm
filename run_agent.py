@@ -3,7 +3,7 @@ import json
 from typing import Optional
 from tqdm import tqdm
 from fire import Fire
-from agent.agent import TableAgent, Model
+from agent import TableAgent, Model
 from utils.data import construct_markdown_table
 from utils.execute import markdown_to_df, remove_merged_suffixes, convert_cells_to_numbers
 from utils.table import transpose, sort_dataframe
@@ -166,7 +166,6 @@ def main(
                     prompt_type=dataset,
                     model=model,
                     long_model=long_model,
-                    model_provider=provider,
                     temperature=temperature,
                     log_dir=log_path,
                     use_full_table=use_full_table,

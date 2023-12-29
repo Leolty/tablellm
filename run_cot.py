@@ -4,7 +4,7 @@ import json
 from typing import Optional
 from tqdm import tqdm
 from fire import Fire
-from agent.model import Model
+from agent import Model
 
 from utils.data import construct_markdown_table
 from utils.execute import markdown_to_df, remove_merged_suffixes

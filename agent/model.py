@@ -5,8 +5,7 @@ import tiktoken
 import timeout_decorator
 from transformers import AutoTokenizer, AutoModelForCausalLM
 from typing import Optional, Union
-from vllm import LLM, SamplingParams
-
+            
 class Model:
     def __init__(self, model_name: str, provider: str = 'openai'):
         self.model_name = model_name
@@ -25,6 +24,7 @@ class Model:
                 openai.api_key = API_KEY
                 
         elif provider == "vllm":
+            from vllm import LLM
             self.model = LLM(model_name, gpu_memory_utilization=0.9)
             self.tokenizer = self.model.get_tokenizer()
 
@@ -92,6 +92,8 @@ class Model:
         return decoded_outputs[prompt_length:], {"prompt": prompt, "prompt_length": len(inputs[0])}
     
     def query_vllm(self, prompt: str, **kwargs) -> str:
+        from vllm import SamplingParams
+        
         n = kwargs.get("n", 1)
     
         
